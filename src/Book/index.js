@@ -13,7 +13,13 @@ class Book extends Component {
     this.setState({
       shelf: e.currentTarget.value
     });
-    document.getElementsByClassName("close-search")[0].click()
+    this.backToMain()
+  }
+
+  backToMain() {
+    if(document.getElementsByClassName("close-search").length > 0) {
+      document.getElementsByClassName("close-search")[0].click()
+    }
   }
 
   render() {
