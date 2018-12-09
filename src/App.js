@@ -6,20 +6,48 @@ import ListBooks from "./ListBooks";
 import SearchBooks from "./SearchBooks";
 
 class BooksApp extends React.Component {
-  state = {
-    /**
-     * TODO: Instead of using this state variable to keep track of which page
-     * we're on, use the URL in the browser's address bar. This will ensure that
-     * users can use the browser's back and forward buttons to navigate between
-     * pages, as well as provide a good URL they can bookmark and share.
-     */
-    showSearchPage: false
-  };
+  state = {};
+
+  componentDidMount() {
+    this._getBooks();
+  }
+
+  async _getBooks() {
+    const books = await BooksAPI.getAll();
+
+    this.setState({
+      books
+    });
+  }
+
+  async moveToShelf(newBook, shelf) {
+    const updatedBooksIds = await BooksAPI.update(newBook, shelf)
+
+    newBook.shelf = shelf
+
+    const books = this.state.books.filter(book => book.id !== newBook.id).concat(newBook)
+
+    this.setState({
+      books
+    })
+  }
 
   render() {
+    const { books } = this.state;
+
     return (
       <div className="app">
-        <Route exact path="/" render={() => <ListBooks />} />
+        <Route
+          exact
+          path="/"
+          render={() =>
+            books ? (
+              <ListBooks books={this.state.books} moveToShelf={this.moveToShelf.bind(this)} />
+            ) : (
+              "Loading..."
+            )
+          }
+        />
 
         <Route path="/search" render={() => <SearchBooks />} />
       </div>
