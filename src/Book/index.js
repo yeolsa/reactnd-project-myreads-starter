@@ -2,19 +2,28 @@ import React, { Component } from "react";
 
 class Book extends Component {
   state = {
-    shelf: this.props.book.shelf
-  }
+    shelf:
+      typeof this.props.book.shelf !== "undefined"
+        ? this.props.book.shelf
+        : "none"
+  };
 
   changeEvent(e) {
     this.props.moveToShelf(this.props.book, e.currentTarget.value);
     this.setState({
       shelf: e.currentTarget.value
-    })
+    });
+    document.getElementsByClassName("close-search")[0].click()
   }
 
   render() {
     const { book } = this.props;
-    
+    const smallThumbnail =
+      typeof book.imageLinks !== "undefined" &&
+      typeof book.imageLinks.smallThumbnail !== "undefined"
+        ? book.imageLinks.smallThumbnail
+        : "";
+
     return (
       <div className="book" data-id={book.id}>
         <div className="book-top">
@@ -23,11 +32,14 @@ class Book extends Component {
             style={{
               width: 128,
               height: 193,
-              backgroundImage: `url("${book.imageLinks.smallThumbnail}")`
+              backgroundImage: `url("${smallThumbnail}")`
             }}
           />
           <div className="book-shelf-changer">
-            <select value={book.shelf} onChange={e => this.changeEvent.call(this, e)}>
+            <select
+              value={this.state.shelf}
+              onChange={e => this.changeEvent.call(this, e)}
+            >
               <option value="move" disabled>
                 Move to...
               </option>
@@ -39,7 +51,9 @@ class Book extends Component {
           </div>
         </div>
         <div className="book-title">{book.title}</div>
-        <div className="book-authors">{book.authors.join(", ")}</div>
+        <div className="book-authors">
+          {typeof book.authors !== "undefined" ? book.authors.join(", ") : ""}
+        </div>
       </div>
     );
   }
