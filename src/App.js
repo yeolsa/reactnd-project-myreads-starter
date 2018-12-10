@@ -12,10 +12,10 @@ class BooksApp extends React.Component {
   };
 
   componentDidMount() {
-    this._getBooks();
+    this.getBooks();
   }
 
-  async _getBooks() {
+  async getBooks() {
     const books = await BooksAPI.getAll();
 
     this.setState({
