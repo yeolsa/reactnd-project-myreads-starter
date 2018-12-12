@@ -1,9 +1,10 @@
 import React from "react";
 import * as BooksAPI from "./BooksAPI";
-import { Route } from "react-router-dom";
+import { Switch, Route } from "react-router-dom";
 import "./App.css";
 import ListBooks from "./ListBooks";
 import SearchBooks from "./SearchBooks";
+import NoMatch from "./NoMatch";
 
 class BooksApp extends React.Component {
   state = {
@@ -38,10 +39,17 @@ class BooksApp extends React.Component {
   async searchBook(query) {
     if (typeof query !== "undefined" && query !== "") {
       const searchBooks = await BooksAPI.search(query);
-
+      
       this.setState({
         searchBooks
       });
+
+      return searchBooks;
+    } else {
+      this.setState({
+        searchBooks: []
+      });
+      return Promise.resolve();
     }
   }
 
@@ -50,31 +58,35 @@ class BooksApp extends React.Component {
 
     return (
       <div className="app">
-        <Route
-          exact
-          path="/"
-          render={() =>
-            books ? (
-              <ListBooks
-                books={this.state.books}
-                moveToShelf={this.moveToShelf.bind(this)}
-              />
-            ) : (
-              "Loading..."
-            )
-          }
-        />
+        <Switch>
+          <Route
+            exact
+            path="/"
+            render={() =>
+              books ? (
+                <ListBooks
+                  books={this.state.books}
+                  moveToShelf={this.moveToShelf.bind(this)}
+                />
+              ) : (
+                "Loading..."
+              )
+            }
+          />
 
-        <Route
-          path="/search"
-          render={({ history }) => (
-            <SearchBooks
-              books={searchBooks}
-              moveToShelf={this.moveToShelf.bind(this)}
-              searchBook={this.searchBook.bind(this)}
-            />
-          )}
-        />
+          <Route
+            path="/search"
+            render={({ history }) => (
+              <SearchBooks
+                books={searchBooks}
+                moveToShelf={this.moveToShelf.bind(this)}
+                searchBook={this.searchBook.bind(this)}
+              />
+            )}
+          />
+
+          <Route component={NoMatch}/>
+        </Switch>
       </div>
     );
   }

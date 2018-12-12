@@ -1,8 +1,13 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import Book from "../Book";
+// import { DebounceInput } from "react-debounce-input";
 
 class SearchBooks extends Component {
+  state = {
+    isSearching: false
+  };
+
   render() {
     const { books, moveToShelf, searchBook } = this.props;
 
@@ -13,28 +18,39 @@ class SearchBooks extends Component {
             Close
           </Link>
           <div className="search-books-input-wrapper">
-            {/*
-              NOTES: The search from BooksAPI is limited to a particular set of search terms.
-              You can find these search terms here:
-              https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md
-
-              However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
-              you don't find a specific author or title. Every search is limited by search terms.
-            */}
-            <input type="text" placeholder="Search by title or author" onKeyUp={e => {
-              searchBook(e.currentTarget.value)
-            }}/>
+            <input
+              type="text"
+              placeholder="Search by title or author"
+              onKeyUp={e => {
+                if (e.currentTarget.value === "") {
+                  searchBook(e.currentTarget.value);
+                } else if (!this.state.isSearching) { // debounce?
+                  this.setState({
+                    isSearching: true
+                  });
+                  searchBook(e.currentTarget.value).then(() => {
+                    setTimeout(() => {
+                      this.setState({
+                        isSearching: false
+                      });
+                    }, 300);
+                  });
+                }
+              }}
+            />
           </div>
         </div>
         <div className="search-books-results">
           <ol className="books-grid">
-            {(Array.isArray(books))? books.map((book, i) => {
-              return (
-                <li key={book.id}>
-                  <Book book={book} moveToShelf={moveToShelf} />
-                </li>
-              );
-            }) : ""}
+            {Array.isArray(books)
+              ? books.map((book, i) => {
+                  return (
+                    <li key={book.id}>
+                      <Book book={book} moveToShelf={moveToShelf} />
+                    </li>
+                  );
+                })
+              : ""}
           </ol>
         </div>
       </div>

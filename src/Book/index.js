@@ -2,10 +2,7 @@ import React, { Component } from "react";
 
 class Book extends Component {
   state = {
-    shelf:
-      typeof this.props.book.shelf !== "undefined"
-        ? this.props.book.shelf
-        : "none"
+    shelf: "none"
   };
 
   changeEvent(e) {
@@ -13,13 +10,19 @@ class Book extends Component {
     this.setState({
       shelf: e.currentTarget.value
     });
-    this.backToMain()
+    this.backToMain();
   }
 
   backToMain() {
-    if(document.getElementsByClassName("close-search").length > 0) {
-      document.getElementsByClassName("close-search")[0].click()
+    if (document.getElementsByClassName("close-search").length > 0) {
+      document.getElementsByClassName("close-search")[0].click();
     }
+  }
+
+  getShelf() {
+    return typeof this.props.book.shelf !== "undefined"
+    ? this.props.book.shelf
+    : "none";
   }
 
   render() {
@@ -28,7 +31,7 @@ class Book extends Component {
       typeof book.imageLinks !== "undefined" &&
       typeof book.imageLinks.smallThumbnail !== "undefined"
         ? book.imageLinks.smallThumbnail
-        : "";
+        : "https://dummyimage.com/128x193/fff/000.png&text=no+cover+image";
 
     return (
       <div className="book" data-id={book.id}>
@@ -43,7 +46,7 @@ class Book extends Component {
           />
           <div className="book-shelf-changer">
             <select
-              value={this.state.shelf}
+              value={this.getShelf()}
               onChange={e => this.changeEvent.call(this, e)}
             >
               <option value="move" disabled>
